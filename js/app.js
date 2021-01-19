@@ -1,17 +1,4 @@
-const req = "https://swapi.dev/api/films/";
-
-async function episodes () {
-    // const res = await fetch(`${req}films`, { method: "GET" });
-return fetch(req, { method: "GET" });
-    // return res.json;
-}
-
-
-console.log(episodes().then(data => data.json));
-
-const list = document.getElementById("ul");
-
-class Doc {
+class List {
     constructor (element) {
         this.listElement = element;
         this.textList = [];
@@ -28,9 +15,9 @@ class Doc {
         while (this.listElement.firstChild) {
             this.listElement.removeChild(this.listElement.firstChild);
         }
-
+        
         for (const text of this.textList) {
-            this.listElement.append(Doc.createListItem(text));
+            this.listElement.append(List.createListItem(text));
         }
     }
 
@@ -45,4 +32,27 @@ class Doc {
     }
 }
 
-let def = new Doc (10, 11);
+const list = new List(document.getElementById("ul"));
+
+const request = "https://swapi.dev/api/films/";
+
+// const ajax = async (request) => await fetch(request).then(res => res.json());
+
+
+// async function episodes () {
+//     // const json = 
+//     const {results} = ajax(request)
+//     return results;
+// }
+// console.log(episodes());
+
+async function episodes () {
+    const req = await fetch(request).then(res => res.json());
+    const { results } = req;
+    results.forEach(element => {
+        console.log(element.episode_id, element.title, element.opening_crawl);
+    });
+}
+
+
+episodes();
