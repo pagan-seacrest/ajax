@@ -32,27 +32,55 @@ class List {
     }
 }
 
-const list = new List(document.getElementById("ul"));
+function createElement (parent, value, content) {
+    const element = document.createElement(value);
+    element.textContent = content;
+    parent.append(element);
+}
+
+function spinner(value) {
+    if (value === true) {
+        document.getElementsByTagName("div")[0].setAttribute("id", "shading");
+        document.getElementsByTagName("span")[0].setAttribute("id","spinner");
+    }
+    if (value === false) {
+        document.getElementsByTagName("div")[0].removeAttribute("id");
+        document.getElementsByTagName("span")[0].removeAttribute("id");
+    }
+}
+
+spinner(true);
+
+const list = new List(document.getElementById("root"));
 
 const request = "https://swapi.dev/api/films/";
 
-// const ajax = async (request) => await fetch(request).then(res => res.json());
+const ajax = async request => await fetch(request).then(req => req.json());
 
 
-// async function episodes () {
-//     // const json = 
-//     const {results} = ajax(request)
-//     return results;
-// }
-// console.log(episodes());
+function episodes () {
+    return ajax(request).then(({results}) => {
+        
+        
+        results.forEach(res => list.add(`Episode ${res.episode_id} `));
+        
+        
+        results.forEach((res, iter) => {
+            const li = document.getElementsByTagName("li")[iter];
+            createElement(li, "h3", res.title)
+            createElement(li, "p", res.opening_crawl);
+            
+            
+            res.characters.forEach((chars) => {
+                ajax(chars).then((characters) =>  createElement(li, "p", characters.name))
+            });
 
-async function episodes () {
-    const req = await fetch(request).then(res => res.json());
-    const { results } = req;
-    results.forEach(element => {
-        console.log(element.episode_id, element.title, element.opening_crawl);
-    });
+
+            
+        });
+            
+    }).catch(new Error("Failure request"));
+
 }
 
-
-episodes();
+episodes().then(() => spinner(false))
